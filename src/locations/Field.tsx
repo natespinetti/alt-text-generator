@@ -38,6 +38,7 @@ const Field = () => {
   const [isSet, setIsSet] = useState(false);
   const [image, setImage] = useState("");
   const [isBroken, setIsBroken] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (bynderURL) {
@@ -97,10 +98,11 @@ const Field = () => {
 
 	// Image upload from URL
   const handleUrlUpload = async (imageUrl: string) => {
+    setIsLoading(true);
 		try {
 			// Fetch the image from the URL
-			const response = await fetch(imageUrl)
-			const blob = await response.blob()
+			const response = await fetch(imageUrl);
+			const blob = await response.blob();
       setAltText("");
 
 			// Convert the blob to base64
@@ -124,7 +126,9 @@ const Field = () => {
 		} catch (error) {
       setIsBroken(true);
 			console.error("Error uploading image from URL:", error)
-		}
+		} finally {
+      setIsLoading(false);
+    }
 	}
 
   // Convert Blob to Base64 with format extraction
@@ -195,39 +199,53 @@ const Field = () => {
         <p style={{paddingTop: ".5rem"}}>There has been an error with the Alt Text Generator. Please try again later.</p>
       ) : (
         <ButtonGroup variant="spaced" spacing="spacingM">
-          {OGText === altText ? (
-            <>
+        {isLoading ? (
+          <Button isLoading style={{ marginTop: ".5rem" }}>Loading</Button>
+        ) : OGText === altText ? (
+          <>
             {isSet ? ( 
-              <Stack style={{marginTop: ".5rem"}}>
+              <Stack style={{ marginTop: ".5rem" }}>
                 <Button startIcon={<DoneIcon />} size="small" isDisabled={true}>
                   Saved
                 </Button>
-                <Button startIcon={<CycleIcon />} variant="secondary" size="small" onClick={() => handleUrlUpload(image)}>
+                <Button 
+                  startIcon={<CycleIcon />} 
+                  variant="secondary" 
+                  size="small" 
+                  onClick={() => handleUrlUpload(image)}
+                >
                   Generate new alt text
                 </Button>
               </Stack>
             ) : (
-              <Button startIcon={<CycleIcon />} isDisabled={image === ""} variant="primary" size="medium" style={{marginTop: ".5rem"}} onClick={() => handleUrlUpload(image)}>
+              <Button 
+                startIcon={<CycleIcon />} 
+                isDisabled={image === ""} 
+                variant="primary" 
+                size="medium" 
+                style={{ marginTop: ".5rem" }} 
+                onClick={() => handleUrlUpload(image)}
+              >
                 {image === "" ? "Add an image to get started" : "Generate alt text"}
               </Button>
             )}
-            </>
-          ) : altText !== "" ? (
-              <>
-              <Stack style={{marginTop: ".5rem"}}>
-                <Button variant="primary" size="small" onClick={handleSave}>
-                  Save this
-                </Button>
-                <Button startIcon={<CycleIcon />} variant="secondary" size="small" onClick={() => handleUrlUpload(image)}>
-                  Generate new alt text
-                </Button>
-              </Stack>
-              </>
-          ) : (
-            <Button isLoading style={{marginTop: ".5rem"}}>Loading</Button>
-          )}
+          </>
+        ) : altText !== "" ? (
+          <>
+            <Stack style={{ marginTop: ".5rem" }}>
+              <Button variant="primary" size="small" onClick={handleSave}>
+                Save this
+              </Button>
+              <Button startIcon={<CycleIcon />} variant="secondary" size="small" onClick={() => handleUrlUpload(image)}>
+                Generate new alt text
+              </Button>
+            </Stack>
+          </>
+        ) : (
+          <Button isLoading style={{ marginTop: ".5rem" }}>Loading</Button>
+        )}
+      </ButtonGroup>
 
-        </ButtonGroup>
       )}
     </>
   );
