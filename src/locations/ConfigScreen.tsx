@@ -63,14 +63,6 @@ const ConfigScreen = () => {
       <Form>
         <Heading>Alt Text Generator App Config</Heading>
         <Paragraph>🎉 Thank you for making the web more accessible! 🎉</Paragraph>
-        {/* <FormControl.Label>Access Token</FormControl.Label>
-          <TextInput
-            value={parameters.accessToken}
-            type="text"
-            name="accessToken"
-            placeholder=""
-            onChange={(e) => setParameters((prev) => ({ ...prev, accessToken: e.target.value }))}
-          /> */}
       </Form>
     </Flex>
   );
