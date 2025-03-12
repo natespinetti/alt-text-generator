@@ -28,6 +28,7 @@ const Field = () => {
   // get the current value of the image field
   const imageField = sdk.entry.fields[IMAGE_FIELD_ID];
   const [imageURL, setImageURL] = useState("");
+  const [imageID, setImageID] = useState("");
 
   // get the current value of the image field
   const bynderField = sdk.entry.fields[BYNDER_FIELD_ID];
@@ -71,7 +72,6 @@ const Field = () => {
         if (value && value.sys && value.sys.id) {
           try {
             const environment = await cmaClient.getSpace(sdk.ids.space).then(space => space.getEnvironment(sdk.ids.environment));
-    
             const checkIfPublished = async () => {
               const updatedAsset = await environment.getAsset(value.sys.id);
               if (updatedAsset.sys.publishedVersion) {
@@ -81,7 +81,7 @@ const Field = () => {
                 setTimeout(checkIfPublished, 3000); // Poll every 3 seconds
               }
             };
-    
+            setImageID(imageField.getValue()?.sys?.id);
             checkIfPublished();
     
           } catch (error) {
@@ -123,6 +123,7 @@ const Field = () => {
 			const data = await backendResponse.json()
 			setAltText(data.text);
       contentField.setValue(data.text);
+      await setInnerImageDescription(data.text);
 		} catch (error) {
       setIsBroken(true);
 			console.error("Error uploading image from URL:", error)
@@ -130,6 +131,31 @@ const Field = () => {
       setIsLoading(false);
     }
 	}
+
+  const setInnerImageDescription = async (text: string) => {
+    try {
+      const asset = await sdk.cma.asset.get({ assetId: imageID });
+  
+      asset.fields.description = {
+        ...asset.fields.description,
+        'en-US': text
+      };
+  
+      const updatedAsset = await sdk.cma.asset.update(
+        { assetId: imageID },
+        asset
+      );
+  
+      const publishedAsset = await sdk.cma.asset.publish(
+        { assetId: imageID },
+        updatedAsset
+      );
+  
+      return publishedAsset;
+    } catch (error) {
+      console.error('Error updating asset description:', error);
+    }
+  };  
 
   // Convert Blob to Base64 with format extraction
   const convertBlobToBase64WithFormat = (
