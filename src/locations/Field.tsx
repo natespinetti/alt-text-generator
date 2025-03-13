@@ -42,6 +42,11 @@ const Field = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    // This ensures our app has enough space to render
+    sdk.window.startAutoResizer();
+  });
+
+  useEffect(() => {
     if (bynderURL) {
       setImage(bynderURL);
     } else if (imageURL) {
