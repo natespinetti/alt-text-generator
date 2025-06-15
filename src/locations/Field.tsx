@@ -38,7 +38,7 @@ const Field = () => {
   
   useEffect(() => {
     // Installation token is directly available!
-    const token = sdk.parameters.installation.accessToken;
+    const token = sdk.parameters.installation.openaiKey;
     setInstallationToken(token);
   }, [sdk]);
 
