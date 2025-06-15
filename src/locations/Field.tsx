@@ -34,6 +34,14 @@ const Field = () => {
 
   const image = bynderURL || imageURL;
 
+  const [installationToken, setInstallationToken] = useState('');
+  
+  useEffect(() => {
+    // Installation token is directly available!
+    const token = sdk.parameters.installation.accessToken;
+    setInstallationToken(token);
+  }, [sdk]);
+
   // Resize the field automatically
   useEffect(() => {
     sdk.window.startAutoResizer();
@@ -113,29 +121,16 @@ useEffect(() => {
     }
   };
 
-  const fetchApiKey = async () => {
-    const spaceId = sdk.ids.space;
-    const environmentId = sdk.ids.environment;
-
-    const res = await fetch(
-      `https://f3hm3c1641.execute-api.eu-central-1.amazonaws.com/alttextapi?spaceId=${spaceId}&environmentId=${environmentId}`
-    );
-
-    const { apiKey } = await res.json();
-    return apiKey;
-  };
-
   const handleUrlUpload = async (imageUrl: string) => {
     setIsLoading(true);
     try {
       const response = await fetch(imageUrl);
       const blob = await response.blob();
       const { base64, format } = await convertBlobToBase64WithFormat(blob);
-      const apiKey = await fetchApiKey();
       const backendResponse = await fetch("https://f3hm3c1641.execute-api.eu-central-1.amazonaws.com/alttext", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: base64, format, apiKey: apiKey })
+        body: JSON.stringify({ image: base64, format, apiKey: installationToken })
       });
       const { text } = await backendResponse.json();
       setAltText(text);

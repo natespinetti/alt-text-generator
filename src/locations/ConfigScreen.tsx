@@ -6,13 +6,11 @@ import { useSDK } from '@contentful/react-apps-toolkit';
 
 export interface AppInstallationParameters {
   accessToken: string;
-  cmaToken: string;
 }
 
 const ConfigScreen = () => {
   const [parameters, setParameters] = useState<AppInstallationParameters>({
     accessToken: '',
-    cmaToken: '',
   });
 
   const sdk = useSDK<ConfigAppSDK>();
@@ -39,7 +37,7 @@ const ConfigScreen = () => {
         setParameters(currentParameters);
       } else {
         // Not installed yet — no problem
-        setParameters({ accessToken: '', cmaToken: '' });
+        setParameters({ accessToken: '' });
       }
       sdk.app.setReady();
     })();
@@ -52,22 +50,12 @@ const ConfigScreen = () => {
         <Paragraph>🎉 Thank you for making the web more accessible! 🎉</Paragraph>
 
         <FormControl marginBottom="spacingL">
-          <FormControl.Label>Access Token</FormControl.Label>
+          <FormControl.Label>OpenAI API Key</FormControl.Label>
           <TextInput
             value={parameters.accessToken}
-            type="text"
+            type="password"
             name="accessToken"
             onChange={(e) => setParameters((prev) => ({ ...prev, accessToken: e.target.value }))}
-          />
-        </FormControl>
-
-        <FormControl>
-          <FormControl.Label>Contentful CMA Token</FormControl.Label>
-          <TextInput
-            value={parameters.cmaToken}
-            type="text"
-            name="cmaToken"
-            onChange={(e) => setParameters((prev) => ({ ...prev, cmaToken: e.target.value }))}
           />
         </FormControl>
       </Form>
