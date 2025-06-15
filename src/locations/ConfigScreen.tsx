@@ -58,11 +58,25 @@ const ConfigScreen = () => {
     const loadParameters = async () => {
       try {
         setIsLoading(true)
-        const currentParameters: AppInstallationParameters | null = await sdk.app.getParameters()
+        const currentParameters: any = await sdk.app.getParameters()
 
         if (currentParameters) {
           console.log("Loaded parameters:", currentParameters)
-          setParameters(currentParameters)
+
+          // Check if parameters match expected pattern (has openaiKey)
+          if (currentParameters.openaiKey && typeof currentParameters.openaiKey === "string") {
+            // Valid parameters with correct structure
+            setParameters({ openaiKey: currentParameters.openaiKey })
+            console.log("Using existing valid parameters")
+          } else {
+            // Parameters don't match expected pattern - clear them
+            console.log("Parameters don't match expected pattern, clearing...")
+            console.log("Found keys:", Object.keys(currentParameters))
+
+            // No valid parameters found, start fresh
+            console.log("No valid parameters found, starting fresh")
+            setParameters({ openaiKey: "" })
+            }
         } else {
           console.log("No existing parameters found")
           setParameters({ openaiKey: "" })
