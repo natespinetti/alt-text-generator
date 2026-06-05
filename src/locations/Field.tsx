@@ -127,10 +127,10 @@ useEffect(() => {
       const response = await fetch(imageUrl);
       const blob = await response.blob();
       const { base64, format } = await convertBlobToBase64WithFormat(blob);
-      const backendResponse = await fetch("https://f3hm3c1641.execute-api.eu-central-1.amazonaws.com/alttext", {
+      const backendResponse = await fetch("https://9z0dq2gj68.execute-api.us-east-2.amazonaws.com/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: base64, format, apiKey: installationToken })
+        body: JSON.stringify({ image: base64, format: format, apiKey: installationToken })
       });
       const { text } = await backendResponse.json();
       setAltText(text);
