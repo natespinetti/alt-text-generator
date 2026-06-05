@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import {
   Button,
   Textarea,
-  ButtonGroup,
-  Stack
+  ButtonGroup
 } from '@contentful/f36-components';
-import { CycleIcon, DoneIcon } from '@contentful/f36-icons';
+import { CycleIcon } from '@contentful/f36-icons';
 import { FieldAppSDK } from '@contentful/app-sdk';
 import { useSDK } from '@contentful/react-apps-toolkit';
 import getFieldId from '../utility/getFieldId';
@@ -27,7 +26,6 @@ const Field = () => {
   const [imageID, setImageID] = useState('');
   const [imageURL, setImageURL] = useState('');
   const [bynderURL, setBynderURL] = useState('');
-  const [isSet, setIsSet] = useState(false);
   const [isBroken, setIsBroken] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [addWarning, setAddWarning] = useState(false);
@@ -136,27 +134,12 @@ useEffect(() => {
       setAltText(text);
       contentField.setValue(text);
       await setInnerImageDescription(text);
-      setIsSet(false);
       setHasGeneratedAltText(true);
     } catch (error) {
       setIsBroken(true);
       console.error("Error uploading image from URL:", error);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleSave = () => {
-    setIsSet(true);
-    try {
-      fetch("https://f3hm3c1641.execute-api.eu-central-1.amazonaws.com/update", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ altText })
-      });
-    } catch (error) {
-      setIsBroken(true);
-      console.error("Error saving alt text:", error);
     }
   };
 
@@ -189,25 +172,15 @@ useEffect(() => {
           {isLoading ? (
             <Button isLoading style={{ marginTop: ".5rem" }}>Loading</Button>
           ) : hasGeneratedAltText ? (
-            <Stack style={{ marginTop: ".5rem" }}>
-              <Button 
-                startIcon={isSet ? <DoneIcon /> : <></>} 
-                isDisabled={isSet} 
-                variant={isSet ? "secondary" : "primary"} 
-                size="small" 
-                onClick={handleSave}
-              >
-                {isSet ? "Saved" : "Save this"}
-              </Button>
-              <Button
-                startIcon={<CycleIcon />}
-                variant="secondary"
-                size="small"
-                onClick={() => handleUrlUpload(image)}
-              >
-                Generate new alt text
-              </Button>
-            </Stack>
+            <Button
+              startIcon={<CycleIcon />}
+              variant="secondary"
+              size="small"
+              style={{ marginTop: ".5rem" }}
+              onClick={() => handleUrlUpload(image)}
+            >
+              Generate new alt text
+            </Button>
           ) : (
             <Button
               startIcon={<CycleIcon />}
